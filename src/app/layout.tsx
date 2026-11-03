@@ -19,13 +19,23 @@ export const metadata: Metadata = {
   description: "A study and interview coach over your own notes.",
 };/* metadata sets the browser tab title and the page description.*/
 
+const themeScript = `(function(){try{var t=localStorage.getItem("theme");var d=t?t==="dark":window.matchMedia("(prefers-color-scheme: dark)").matches;document.documentElement.classList.toggle("dark",d)}catch(e){}})()`;
+// themeScript is a plain string of JavaScript. Read it as: get the saved theme; if there is none, ask the OS with prefers-color-scheme; then set the dark class on <html>. The try/catch keeps a blocked storage from breaking the page.
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${newreader.variable}`}
+      className={`${inter.variable} ${newreader.variable}`}suppressHydrationWarning //suppressHydrationWarning on <html> tells React: “the class here may differ from what the server sent, so don’t warn.” It applies to that one element only, not to its children. We need it because the script changes <html>’s class before React starts.
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <head> 
+        <script dangerouslySetInnerHTML={{ __html: themeScript}} /> 
+      </head>
+      <body>{children}</body>
     </html>
   );
 }//The class names on <html> attach those variables to the whole page.
+
+// dangerouslySetInnerHTML is the Phase 1 danger flag from the roadmap, so it matters that you can say why it is safe here. The string is a constant that I wrote, with no user input anywhere in it. It is dangerous when it contains user-controlled text.
+
+// The <script> sits in <head> and runs before the browser paints the body. That is the whole trick. Without it, the HTML arrives light, React loads, and only then does the dark class appear, which shows a bright flash. This is called the flash of wrong theme.
