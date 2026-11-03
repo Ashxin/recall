@@ -67,3 +67,5 @@ export default function Home() {
     </div>
   );
 }
+
+const bad: number = 'text';
