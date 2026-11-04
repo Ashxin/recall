@@ -45,6 +45,10 @@
   --text-display: 4rem;
   --text-display--line-height: 1.05;
   --text-display--letter-spacing: -0.02em;
+
+  --animate-drift-a: drift-a 18s ease-in-out infinite;
+  --animate-drift-b: drift-b 24s ease-in-out infinite;
+
 }/*--text-display and the related lines define the type scale. Tailwind v4 turns --text-display into the text-display class, and the --line-height and --letter-spacing suffixes attach to it. Six sizes (caption, body, lead, title, headline, display) is enough for an editorial look.*/
 
 @layer base {
@@ -57,3 +61,40 @@
     -webkit-font-smoothing: antialiased;
   }
 }/*@layer base { body {...} } sets page-wide defaults. The generous line height of 1.7 is what makes text feel like a magazine.*/
+
+@keyframes drift-a {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(10%, 8%, 0) scale(1.15); }
+}
+
+@keyframes drift-b {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1.1); }
+  50% { transform: translate3d(-10%, 6%, 0) scale(0.95); }
+}
+
+@layer components {
+  .orb {
+    position: absolute;
+    border-radius: 9999px;
+    background: radial-gradient(
+      circle at center,
+      color-mix(in oklab, var(--accent) 35%, transparent),
+      transparent 70%
+    );
+    will-change: transform;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orb {
+    animation: none;
+  }
+}
+
+/*
+@keyframes defines the motion path. drift-a moves a shape 10% right and 8% down and back, while growing slightly. Percentages in translate3d are relative to the element’s own size. Only transform changes, which is the compositor-friendly property from 1.3.
+--animate-drift-a: ... inside @theme tells Tailwind v4 to generate an animate-drift-a class. The keyframe name inside has to match exactly.
+.orb is the glow. radial-gradient(...) goes from your accent color at 35% strength in the middle to transparent at the edge. color-mix(in oklab, ...) blends the accent with transparency, so the glow works in both themes without a second color.
+will-change: transform hints that this element will move, so the browser gives it its own layer up front. It costs memory, so use it only on things that really animate.
+The prefers-reduced-motion block stops the drifting for users who asked their OS for less motion. It sits outside any @layer, and unlayered CSS beats layered utilities, so it wins over animate-drift-a. Step 1.6 does the full pass for the Motion animations.
+*/
