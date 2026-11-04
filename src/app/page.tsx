@@ -1,10 +1,8 @@
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function Home() {
   return (
-    <main className="mx-auto max-w-2xl px-6 py-24">
-      <ThemeToggle />
-      <p className="mt-10 text-caption uppercase tracking-widest text-accent">
+    <div className="mx-auto max-w-2xl px-6 py-24">
+      <p className="text-caption uppercase tracking-widest text-accent">
         Recall
       </p>
       <h1 className="mt-4 font-serif text-display text-foreground">
@@ -19,6 +17,6 @@ export default function Home() {
           A note card: white surface, hairline border, no heavy shadow.
         </p>
       </div>
-    </main>
+    </div>
   );
 }
