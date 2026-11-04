@@ -3,6 +3,8 @@ import { Inter, Newsreader } from "next/font/google";/*next/font/google download
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { MotionProvider } from "@/components/MotionProvider";
+
 
 const inter = Inter({
   subsets: ["latin"],
@@ -34,14 +36,16 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <script dangerouslySetInnerHTML={{ __html: themeScript}} /> 
       </head>
       <body className="flex min-h-screen flex-col">
-        <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:rounded-md focus:border focus:border-border focus:bg-surface focus:px-4 focus:py-2 focus:text-caption focus:text-foreground">
-          Skip to content
-        </a>
-        <Header />
-        <main id="main" className="flex-1">
-          {children}
-        </main>
-        <Footer />
+        <MotionProvider>
+          <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:rounded-md focus:border focus:border-border focus:bg-surface focus:px-4 focus:py-2 focus:text-caption focus:text-foreground">
+            Skip to content
+          </a>
+          <Header />
+          <main id="main" className="flex-1">
+            {children}
+          </main>
+          <Footer />
+        </MotionProvider>
       </body>
     </html>
   );
@@ -56,3 +60,8 @@ flex min-h-screen flex-col on the body plus flex-1 on <main> makes main take the
 The skip link is invisible (sr-only) until it receives keyboard focus (focus:not-sr-only). It lets keyboard users jump past the navigation straight to the content. href="#main" targets the id="main" below.
 <main> moves into the layout, so every page gets it automatically. That is why page.tsx changes main to div: a page should have only one <main>.
 */
+
+// The other two values are "always" (always reduced, useful for testing) and "never" (ignore the setting).
+// It must be a client component because the provider reads the browser’s media query. The layout stays a server component and only imports it, the same island pattern as before.
+// What this changes in Recall: the fadeUp y rise stops and only the fade stays, the LiftCard hover no longer moves, and the tip’s y shift goes while its fade stays. The page-level fade in template.tsx is opacity-only, so it is unchanged.
+// The orbs are a CSS animation, which Motion doesn’t control. That is why 1.4 already had the @media (prefers-reduced-motion: reduce) rule. Two systems (Motion and CSS) need two guards.
