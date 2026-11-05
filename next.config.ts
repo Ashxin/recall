@@ -68,6 +68,6 @@ export default nextConfig;
 // X-Frame-Options: DENY is the older clickjacking header. I include it because frame-ancestors doesn’t work in report-only mode, so during stage 1 this header is the one actually protecting you. After stage 2 both are active.
 // Referrer-Policy: strict-origin-when-cross-origin stops full URLs (which may contain IDs) leaking to other sites in the Referer header.
 // Permissions-Policy switches off browser features we don’t use (camera, microphone, location).
-// Strict-Transport-Security (HSTS) tells browsers to use only HTTPS for this site for a year. Browsers ignore it on plain http://localhost, so you can’t see it work until the deploy in 1.8. I left out preload on purpose, because it is very hard to undo.
+// script-src allows 'unsafe-inline' until Phase 3 adds a nonce (see decision log).
 
 // source: "/(.*)" applies the headers to every path.
