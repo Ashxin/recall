@@ -1,0 +1,1 @@
+comment on schema public is 'Recall app schema';
